@@ -1,0 +1,183 @@
+/* @import '~normalize.css'; */
+@import '~antd/dist/antd.css';
+
+body, html, h1, h2, h3, h4, h5, h6, ul, ol, li, dl, dt, dd, 
+header, menu, section, p, input, td, th, ins {
+  padding: 0;
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background: #f6f6f6;
+}
+
+ul, li, ol{
+  list-style: none;
+}
+
+a{
+  text-decoration: none !important;
+  color: #666;
+}
+
+a:hover{
+  color: #666;
+  text-decoration: underline;
+}
+
+i, em {
+  font-style: normal;
+}
+
+/* input, textarea, button, select, a {
+  outline: none;
+  border: none;
+} */
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+img {
+  border: none;
+  /* 去除图片底部间距 */
+  vertical-align: middle;
+}
+
+/* 全局样式 */
+body, textarea, select, input, button {
+  font-size: 12px;
+  /* color: #333; */
+  /* font-family: Arial, Helvetica, sans-serif; */
+  font-family: -apple-system,BlinkMacSystemFont,Helvetica Neue,PingFang SC,Microsoft YaHei,Source Han Sans SC,Noto Sans CJK SC,WenQuanYi Micro Hei,sans-serif;
+  
+  /* background-color: #f5f5f5; */
+}
+.text-nowrap {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.wrap-v1 {
+  width: 1100px;
+  margin: 0 auto;
+}
+
+.wrap-v2 {
+  width: 980px;
+  margin: 0 auto;
+}
+
+.ant-form-item-explain-error {
+  font-size: 12px !important
+}
+
+.ant-popover-inner-content {
+  padding: 6px 0;
+}
+
+.rightMenu {
+  text-decoration: none;
+}
+
+.rightMenu li {
+  height: 36px;
+  line-height: 36px;
+  padding: 0 20px;
+  cursor: pointer;
+}
+
+.rightMenu li:hover {
+  background: #f6f6f6;
+}
+
+.rightMenu a {
+  text-decoration: none;
+}
+
+.disableBtn {
+  cursor: default !important;
+  opacity: 0.5;
+}
+
+.boxShadow {
+  box-shadow: 0 1px 3px hsl(0deg 0% 7% / 10%);
+  border-radius: 2px;
+}
+
+.Button {
+  background: none;
+  border: 1px solid;
+  border-radius: 3px;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 14px;
+  line-height: 32px;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.sendBtn {
+  height: 34px;
+  font-weight: bold;
+  width: 78px;
+  font-size: 14px;
+  text-align: center;
+  border-radius: 3px;
+  margin-left: 5px;
+  background: none #056de8;
+  border: 1px solid rgb(5, 109, 232);
+  color: #fff;
+  cursor: pointer;
+}
+
+.sendBtn:hover {
+  background-color: #0461cf;
+  border-color: #0461cf;
+}
+
+.Input {
+  border-radius: 4px !important;
+  border: 1px solid rgb(235, 235, 235) !important;
+}
+
+.ant-tabs-tab-btn {
+  font-size: 16px !important;
+  color: #121212 !important;
+}
+.ant-tabs-top > .ant-tabs-nav, 
+.ant-tabs-bottom > .ant-tabs-nav, 
+.ant-tabs-top > div > .ant-tabs-nav, 
+.ant-tabs-bottom > div > .ant-tabs-nav {
+  margin: 0 !important
+}
+
+.empty {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.Box {
+  padding: 20px
+}
+
+.ant-tabs-tab-active {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.ant-tabs-top > .ant-tabs-nav .ant-tabs-ink-bar,
+.ant-tabs-bottom > .ant-tabs-nav .ant-tabs-ink-bar,
+.ant-tabs-top > div > .ant-tabs-nav .ant-tabs-ink-bar,
+.ant-tabs-bottom > div > .ant-tabs-nav .ant-tabs-ink-bar {
+  height: 3px !important;
+}
+
+.ant-tabs-ink-bar {
+  background-color: #056de8 !important;
+}
