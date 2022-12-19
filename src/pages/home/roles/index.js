@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from 'react'
-import { list, search } from '@/api/roles'
+import { list, search, edit, add, assigning, del } from '@/api/roles'
 import Content from '../../../components/content'
 import { Space, Button as AntdBtn, Input } from 'antd'
 import AddDialog from './dialog/add'
@@ -9,27 +9,49 @@ import DelDialog from './dialog/del'
 import dayjs from 'dayjs'
 import { DeleteFilled, EditFilled, SettingFilled } from '@ant-design/icons'
 import Button from '../../../components/button'
+import { xmMessage } from '../../../utils'
 
 const Roles = memo(() => {
   const [roleList, setRoleList] = useState(null)
   const [searchContent, setSearchContent] = useState('')
-
+  const [currentRole, setcurrentRole] = useState(null)
+  const [pagenum, setPagenum] = useState(1)
+  const [pagesize, setPagesize] = useState(10)
   const [addDialogShow, setAddDialogShow] = useState(false)
   const [editDialogShow, setEditDialogShow] = useState(false)
   const [assigningDialogShow, setAssigningDialogShow] = useState(false)
   const [delDialogShow, setDelDialogShow] = useState(false)
 
-  const changeStatus = (record) => {
-    console.log(record)
+  const addSubmit = async (name, desc) => {
+    const result = await add({ name, desc })
+    await reqFn(pagenum, pagesize)
+    xmMessage(result.code, result.message)
+    setAddDialogShow(false)
+  }
+  const editSubmit = async (rid, name, desc) => {
+    const result = await edit(rid, { name, desc })
+    await reqFn(pagenum, pagesize)
+    xmMessage(result.code, result.message)
+    setEditDialogShow(false)
+  }
+
+  const delSubmit = async () => {
+    const result = await del(currentRole.id)
+    await reqFn(pagenum, pagesize)
+    xmMessage(result.code, result.message)
+    setDelDialogShow(false)
+  }
+
+  const assignSubmit = async (roleId, rightsList) => {
+    const result = await assigning(roleId, rightsList)
+    await reqFn(pagenum, pagesize)
+    xmMessage(result.code, result.message)
+    setAssigningDialogShow(false)
   }
 
   const onSearch = async () => {
     reqFn(1, 10)
   }
-
-  useEffect(() => {
-    console.log(searchContent)
-  }, [searchContent])
 
   const headerContent = (
     <div style={{ display: 'flex', marginBottom: '10px', alignItems: 'center' }}>
@@ -68,24 +90,39 @@ const Roles = memo(() => {
     },
     {
       title: '创建时间',
-      key: 'createTime',
-      dataIndex: 'createTime',
-      render: (text) => dayjs(text).format('YYYY-MM-DD HH:mm'),
+      key: 'create_at',
+      dataIndex: 'create_at',
+      render: (text) => {
+        return dayjs(text).format('YYYY-MM-DD HH:mm')
+      },
     },
     {
       title: '操作',
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Button action={() => setEditDialogShow(true)} icon={<EditFilled />} title="编辑" />
           <Button
-            action={() => setDelDialogShow(true)}
+            action={() => {
+              setcurrentRole(record)
+              setEditDialogShow(true)
+            }}
+            icon={<EditFilled />}
+            title="编辑角色"
+          />
+          <Button
+            action={() => {
+              setcurrentRole(record)
+              setDelDialogShow(true)
+            }}
             icon={<DeleteFilled />}
-            title="删除"
+            title="删除角色"
             danger
           />
           <Button
-            action={() => setAssigningDialogShow(true)}
+            action={() => {
+              setcurrentRole(record)
+              setAssigningDialogShow(true)
+            }}
             icon={<SettingFilled />}
             title="分配权限"
             other
@@ -97,6 +134,8 @@ const Roles = memo(() => {
   ]
 
   const reqFn = async (pagenum, pagesize) => {
+    setPagenum(pagenum)
+    setPagesize(pagesize)
     const { data: result } = !['', undefined].includes(searchContent)
       ? await search(searchContent, pagenum, pagesize)
       : await list(pagenum, pagesize)
@@ -124,10 +163,20 @@ const Roles = memo(() => {
         reqFn={reqFn}
         headerContent={headerContent}
       />
-      <AddDialog open={addDialogShow} hidden={() => setAddDialogShow(false)} />
-      <EditDialog open={editDialogShow} hidden={() => setEditDialogShow(false)} />
-      <DelDialog open={delDialogShow} hidden={() => setDelDialogShow(false)} />
-      <AssigningDialog open={assigningDialogShow} hidden={() => setAssigningDialogShow(false)} />
+      <AddDialog open={addDialogShow} hidden={() => setAddDialogShow(false)} submit={addSubmit} />
+      <EditDialog
+        open={editDialogShow}
+        hidden={() => setEditDialogShow(false)}
+        submit={editSubmit}
+        role={currentRole}
+      />
+      <DelDialog open={delDialogShow} hidden={() => setDelDialogShow(false)} submit={delSubmit} />
+      <AssigningDialog
+        open={assigningDialogShow}
+        hidden={() => setAssigningDialogShow(false)}
+        role={currentRole}
+        submit={assignSubmit}
+      />
     </div>
   )
 })

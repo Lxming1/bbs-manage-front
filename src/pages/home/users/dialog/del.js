@@ -9,6 +9,8 @@ export default memo(({ isLoading, submit, open, hidden }) => {
       onOk={submit}
       confirmLoading={isLoading}
       onCancel={hidden}
-      centered></Modal>
+      centered>
+      <div style={{ fontSize: '16px', textAlign: 'center' }}>确认删除该用户吗？</div>
+    </Modal>
   )
 })

@@ -1,9 +1,7 @@
 import React, { memo, useEffect, useState } from 'react'
-import UserWrapper from './style'
 import { list } from '@/api/rights'
 import Content from '../../../components/content'
 import { Tag } from 'antd'
-import dayjs from 'dayjs'
 
 const Roles = memo(() => {
   const [roleList, setRoleList] = useState(null)
@@ -53,7 +51,6 @@ const Roles = memo(() => {
   const reqFn = async () => {
     const { data: result } = await list()
     const total = result.total
-    console.log(result)
     const rights = result.rights.map((item) => ({
       ...item,
       key: item.id,

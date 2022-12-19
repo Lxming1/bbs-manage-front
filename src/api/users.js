@@ -31,9 +31,10 @@ export const search = (user, pagenum, pagesize) => {
   })
 }
 
-export const add = ({ email, password }) => {
+export const add = (email, password) => {
   return request({
     url: `/users`,
+    method: 'post',
     data: {
       email,
       password,
@@ -48,14 +49,11 @@ export const assigning = (userId, roleId) => {
   })
 }
 
-export const edit = (userId, { name, introduction }) => {
+export const edit = (userId, info) => {
   return request({
-    url: `/user/${userId}`,
+    url: `/users/${userId}`,
     method: 'put',
-    data: {
-      name,
-      introduction,
-    },
+    data: info,
   })
 }
 

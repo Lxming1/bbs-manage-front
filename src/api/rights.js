@@ -9,3 +9,9 @@ export const list = (type = 'list') => {
     },
   })
 }
+
+export const roleRights = (roleId) => {
+  return request({
+    url: `/roles/${roleId}/rights`,
+  })
+}

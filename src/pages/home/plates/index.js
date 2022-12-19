@@ -1,26 +1,23 @@
 import React, { memo, useEffect, useState } from 'react'
-import { list } from '@/api/plate'
+import { list, edit, add, del } from '@/api/plate'
 import Content from '../../../components/content'
-import { Space, Button as AntdBtn, Input } from 'antd'
+import { Space, Button as AntdBtn } from 'antd'
 import AddDialog from './dialog/add'
 import EditDialog from './dialog/edit'
-import AssigningDialog from './dialog/assigning'
 import DelDialog from './dialog/del'
 import dayjs from 'dayjs'
-import { DeleteFilled, EditFilled, SettingFilled } from '@ant-design/icons'
+import { DeleteFilled, EditFilled } from '@ant-design/icons'
 import Button from '../../../components/button'
+import { xmMessage } from '../../../utils'
 
 const Roles = memo(() => {
   const [roleList, setRoleList] = useState(null)
-
   const [addDialogShow, setAddDialogShow] = useState(false)
   const [editDialogShow, setEditDialogShow] = useState(false)
-  const [assigningDialogShow, setAssigningDialogShow] = useState(false)
   const [delDialogShow, setDelDialogShow] = useState(false)
-
-  const changeStatus = (record) => {
-    console.log(record)
-  }
+  const [currentPlate, setCurrentPlate] = useState(null)
+  const [pagenum, setPagenum] = useState(1)
+  const [pagesize, setPagesize] = useState(10)
 
   const headerContent = (
     <AntdBtn
@@ -31,6 +28,26 @@ const Roles = memo(() => {
       添加板块
     </AntdBtn>
   )
+
+  const addSubmit = async (name, description) => {
+    const result = await add({ name, description })
+    await reqFn(pagenum, pagesize)
+    xmMessage(result.code, result.message)
+    setAddDialogShow(false)
+  }
+  const editSubmit = async (pid, name, description) => {
+    const result = await edit(pid, { name, description })
+    await reqFn(pagenum, pagesize)
+    xmMessage(result.code, result.message)
+    setEditDialogShow(false)
+  }
+
+  const delSubmit = async () => {
+    const result = await del(currentPlate.id)
+    await reqFn(pagenum, pagesize)
+    xmMessage(result.code, result.message)
+    setDelDialogShow(false)
+  }
 
   const columns = [
     {
@@ -44,9 +61,14 @@ const Roles = memo(() => {
       key: 'name',
     },
     {
+      title: '板块描述',
+      dataIndex: 'description',
+      key: 'description',
+    },
+    {
       title: '创建时间',
-      key: 'createTime',
-      dataIndex: 'createTime',
+      key: 'create_at',
+      dataIndex: 'create_at',
       render: (text) => dayjs(text).format('YYYY-MM-DD HH:mm'),
     },
     {
@@ -54,9 +76,19 @@ const Roles = memo(() => {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Button action={() => setEditDialogShow(true)} icon={<EditFilled />} title="编辑" />
           <Button
-            action={() => setDelDialogShow(true)}
+            action={() => {
+              setCurrentPlate(record)
+              setEditDialogShow(true)
+            }}
+            icon={<EditFilled />}
+            title="编辑"
+          />
+          <Button
+            action={() => {
+              setCurrentPlate(record)
+              setDelDialogShow(true)
+            }}
             icon={<DeleteFilled />}
             title="删除"
             danger
@@ -67,6 +99,8 @@ const Roles = memo(() => {
   ]
 
   const reqFn = async (pagenum, pagesize) => {
+    setPagenum(pagenum)
+    setPagesize(pagesize)
     const { data: result } = await list(pagenum, pagesize)
     const total = result.total
     const plates = result.plates.map((item) => ({
@@ -86,16 +120,20 @@ const Roles = memo(() => {
   return (
     <div>
       <Content
-        breadcrumbList={['权限管理', '角色列表']}
+        breadcrumbList={['动态管理', '分类列表']}
         columns={columns}
         data={roleList}
         reqFn={reqFn}
         headerContent={headerContent}
       />
-      <AddDialog open={addDialogShow} hidden={() => setAddDialogShow(false)} />
-      <EditDialog open={editDialogShow} hidden={() => setEditDialogShow(false)} />
-      <DelDialog open={delDialogShow} hidden={() => setDelDialogShow(false)} />
-      <AssigningDialog open={assigningDialogShow} hidden={() => setAssigningDialogShow(false)} />
+      <AddDialog open={addDialogShow} hidden={() => setAddDialogShow(false)} submit={addSubmit} />
+      <EditDialog
+        open={editDialogShow}
+        hidden={() => setEditDialogShow(false)}
+        submit={editSubmit}
+        plate={currentPlate}
+      />
+      <DelDialog open={delDialogShow} hidden={() => setDelDialogShow(false)} submit={delSubmit} />
     </div>
   )
 })

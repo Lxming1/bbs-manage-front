@@ -1,6 +1,5 @@
 import React, { memo, useEffect, useState } from 'react'
-import UserWrapper from './style'
-import { list, search } from '@/api/users'
+import { list, search, add, edit, del, assigning } from '@/api/users'
 import Content from '../../../components/content'
 import { Space, Switch, Button as AntdBtn, Input } from 'antd'
 import AddDialog from './dialog/add'
@@ -10,18 +9,60 @@ import DelDialog from './dialog/del'
 import dayjs from 'dayjs'
 import { DeleteFilled, EditFilled, SettingFilled } from '@ant-design/icons'
 import Button from '../../../components/button'
+import { xmMessage } from '../../../utils'
 
 const Users = memo(() => {
+  const profile = JSON.parse(sessionStorage.getItem('user'))
   const [userList, setUserList] = useState(null)
   const [searchContent, setSearchContent] = useState('')
+  const [currentUser, setCurrentUser] = useState(null)
+  const [pagenum, setPagenum] = useState(1)
+  const [pagesize, setPagesize] = useState(10)
 
   const [addDialogShow, setAddDialogShow] = useState(false)
   const [editDialogShow, setEditDialogShow] = useState(false)
   const [assigningDialogShow, setAssigningDialogShow] = useState(false)
   const [delDialogShow, setDelDialogShow] = useState(false)
 
-  const changeStatus = (record) => {
-    console.log(record)
+  const changeStatus = async (record) => {
+    const status = record.status === 0 ? 1 : 0
+    const result = await edit(record.id, { status })
+    await reqFn(pagenum, pagesize)
+    xmMessage(result.code, result.message)
+  }
+
+  const addSubmit = async (email, password) => {
+    const result = await add(email, password)
+    await reqFn(pagenum, pagesize)
+    xmMessage(result.code, result.message)
+    setAddDialogShow(false)
+  }
+  const editSubmit = async (uid, name, password) => {
+    const isProfile = profile.id === currentUser.id
+    let result
+    if (isProfile) {
+      result = await edit(uid, { name, password })
+    } else {
+      result = await edit(uid, { name })
+    }
+    await reqFn(pagenum, pagesize)
+    xmMessage(result.code, result.message)
+    setEditDialogShow(false)
+  }
+
+  const delSubmit = async () => {
+    const result = await del(currentUser.id)
+    await reqFn(pagenum, pagesize)
+    xmMessage(result.code, result.message)
+    setDelDialogShow(false)
+  }
+
+  const assignSubmit = async (userId, roleId) => {
+    if (!roleId) return
+    const result = await assigning(userId, roleId)
+    await reqFn(pagenum, pagesize)
+    xmMessage(result.code, result.message)
+    setAssigningDialogShow(false)
   }
 
   const onSearch = async () => {
@@ -88,15 +129,28 @@ const Users = memo(() => {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <Button action={() => setEditDialogShow(true)} icon={<EditFilled />} title="编辑" />
           <Button
-            action={() => setDelDialogShow(true)}
+            action={() => {
+              setCurrentUser(record)
+              setEditDialogShow(true)
+            }}
+            icon={<EditFilled />}
+            title="编辑用户"
+          />
+          <Button
+            action={() => {
+              setCurrentUser(record)
+              setDelDialogShow(true)
+            }}
             icon={<DeleteFilled />}
-            title="删除"
+            title="删除用户"
             danger
           />
           <Button
-            action={() => setAssigningDialogShow(true)}
+            action={() => {
+              setCurrentUser(record)
+              setAssigningDialogShow(true)
+            }}
             icon={<SettingFilled />}
             title="分配角色"
             other
@@ -108,6 +162,8 @@ const Users = memo(() => {
   ]
 
   const reqFn = async (pagenum, pagesize) => {
+    setPagenum(pagenum)
+    setPagesize(pagesize)
     const { data: result } = !['', undefined].includes(searchContent)
       ? await search(searchContent, pagenum, pagesize)
       : await list(pagenum, pagesize)
@@ -127,7 +183,7 @@ const Users = memo(() => {
   }, [])
 
   return (
-    <UserWrapper>
+    <div>
       <Content
         breadcrumbList={['用户管理', '用户列表']}
         columns={columns}
@@ -135,11 +191,22 @@ const Users = memo(() => {
         reqFn={reqFn}
         headerContent={headerContent}
       />
-      <AddDialog open={addDialogShow} hidden={() => setAddDialogShow(false)} />
-      <EditDialog open={editDialogShow} hidden={() => setEditDialogShow(false)} />
-      <DelDialog open={delDialogShow} hidden={() => setDelDialogShow(false)} />
-      <AssigningDialog open={assigningDialogShow} hidden={() => setAssigningDialogShow(false)} />
-    </UserWrapper>
+      <AddDialog open={addDialogShow} hidden={() => setAddDialogShow(false)} submit={addSubmit} />
+      <EditDialog
+        open={editDialogShow}
+        hidden={() => setEditDialogShow(false)}
+        submit={editSubmit}
+        user={currentUser}
+        isProfile={profile?.id === currentUser?.id}
+      />
+      <DelDialog open={delDialogShow} hidden={() => setDelDialogShow(false)} submit={delSubmit} />
+      <AssigningDialog
+        open={assigningDialogShow}
+        hidden={() => setAssigningDialogShow(false)}
+        user={currentUser}
+        submit={assignSubmit}
+      />
+    </div>
   )
 })
 

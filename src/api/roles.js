@@ -31,13 +31,11 @@ export const search = (role, pagenum, pagesize) => {
   })
 }
 
-export const add = ({ name, desc }) => {
+export const add = (info) => {
   return request({
     url: `/roles`,
-    data: {
-      name,
-      desc,
-    },
+    method: 'post',
+    data: info,
   })
 }
 
@@ -59,11 +57,5 @@ export const edit = (roleId, { name, desc }) => {
       name,
       desc,
     },
-  })
-}
-
-export const roleRights = (roleId, { name, desc }) => {
-  return request({
-    url: `/roles/${roleId}/rights`,
   })
 }

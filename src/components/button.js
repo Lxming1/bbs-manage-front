@@ -6,9 +6,9 @@ export default memo(({ title, action, icon, danger, other }) => {
     <Tooltip placement="top" title={title}>
       <Button
         type={other ? '' : 'primary'}
+        style={{ width: '45px' }}
         danger={danger}
         onClick={action}
-        shape="round"
         icon={icon}
       />
     </Tooltip>

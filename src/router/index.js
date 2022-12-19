@@ -7,37 +7,55 @@ import Roles from '../pages/home/roles'
 import Rights from '../pages/home/rights'
 import Moments from '../pages/home/moments'
 import Plates from '../pages/home/plates'
+import NotFound from '../pages/notFount'
+import VerifyAuthorization from '../components/verifyAuthorization'
+
+const verify = (Cpn, login = false) => (
+  <VerifyAuthorization login={login}>{Cpn}</VerifyAuthorization>
+)
 
 const routes = [
   {
     path: '/login',
-    element: <Login />,
+    element: verify(<Login />, true),
   },
   {
     path: '/',
-    element: <Home />,
+    element: verify(<Home />),
     children: [
       {
+        path: '/',
+        element: verify(<Users />),
+      },
+      {
         path: '/users',
-        element: <Users />,
+        element: verify(<Users />),
       },
       {
         path: '/roles',
-        element: <Roles />,
+        element: verify(<Roles />),
       },
       {
         path: '/rights',
-        element: <Rights />,
+        element: verify(<Rights />),
       },
       {
         path: '/moments',
-        element: <Moments />,
+        element: verify(<Moments />),
       },
       {
         path: '/plates',
-        element: <Plates />,
+        element: verify(<Plates />),
+      },
+      {
+        path: '*',
+        element: verify(<NotFound />),
       },
     ],
+  },
+  {
+    path: '*',
+    element: verify(<Login />, true),
   },
 ]
 
