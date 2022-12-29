@@ -6,7 +6,7 @@ export default memo(({ open, hidden, role, submit }) => {
   const [loading, setLoading] = useState(false)
   const [rightsList, setRightsList] = useState(null)
   const [currentRights, setCurrentRights] = useState(null)
-  console.log(currentRights)
+
   const submitAssigning = async () => {
     setLoading(true)
     await submit(role?.id, currentRights)
@@ -18,13 +18,26 @@ export default memo(({ open, hidden, role, submit }) => {
     setCurrentRights(null)
   }
 
-  const onCheck = (keys) => {
+  const onCheck = (keys, e) => {
+    console.log(keys)
     setCurrentRights(keys)
   }
 
   const getRightOptions = async () => {
-    const { data: allRights } = await list('tree')
-    setRightsList(allRights.rights)
+    let {
+      data: { rights },
+    } = await list('tree')
+    // function handleChildren(arr) {
+    //   if (!arr) return
+    //   for (const item of arr) {
+    //     if (item.level >= 2) {
+    //       item.disableCheckbox = true
+    //     }
+    //     handleChildren(item.children)
+    //   }
+    // }
+    // handleChildren(rights)
+    setRightsList(rights)
   }
 
   const getCurrrntRights = async () => {
@@ -39,7 +52,7 @@ export default memo(({ open, hidden, role, submit }) => {
 
   useEffect(() => {
     getCurrrntRights()
-  }, [role])
+  }, [role, open])
 
   return (
     <Modal
@@ -59,6 +72,7 @@ export default memo(({ open, hidden, role, submit }) => {
         defaultExpandAll
         checkedKeys={currentRights}
         height={500}
+        selectable={false}
       />
     </Modal>
   )

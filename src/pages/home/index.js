@@ -1,37 +1,29 @@
 import React, { useEffect, useState } from 'react'
 import {
-  LaptopOutlined,
-  NotificationOutlined,
+  AppstoreFilled,
+  BulbFilled,
+  FileTextFilled,
   PoweroffOutlined,
   UserOutlined,
 } from '@ant-design/icons'
-import { Breadcrumb, Layout, Menu, Popover } from 'antd'
+import { Layout, Menu, Popover } from 'antd'
 import { Outlet, useNavigate } from 'react-router-dom'
+import { getMenus } from '../../api/auth'
 const { Header, Sider } = Layout
 
 const App = () => {
   const [collapsed, setCollapsed] = useState(false)
+  const [currentKey, setCurrentKey] = useState('')
+  const [openKey, setOpenKey] = useState(null)
+  const [menuItems, setMenuItems] = useState(null)
   const user = JSON.parse(sessionStorage.getItem('user'))
   const navigate = useNavigate()
-  function getItem(label, key, icon, children) {
-    return {
-      key,
-      icon,
-      children,
-      label,
-    }
+
+  const iconMap = {
+    用户管理: <UserOutlined />,
+    权限管理: <BulbFilled />,
+    动态管理: <FileTextFilled />,
   }
-  const items = [
-    getItem('用户管理', '1', <UserOutlined />, [getItem('用户列表', '/users')]),
-    getItem('权限管理', '2', <UserOutlined />, [
-      getItem('角色列表', '/roles'),
-      getItem('权限列表', '/rights'),
-    ]),
-    getItem('动态管理', '3', <UserOutlined />, [
-      getItem('动态列表', '/moments'),
-      getItem('分类列表', '/plates'),
-    ]),
-  ]
 
   const logout = () => {
     sessionStorage.removeItem('user')
@@ -40,7 +32,7 @@ const App = () => {
 
   const rightMenu = () => (
     <ul className="rightMenu">
-      <li onClick={() => (window.location.href = `#/profile`)}>
+      <li onClick={() => (window.location.href = `#/users/${user.id}`)}>
         <a>
           <UserOutlined style={{ marginRight: '6px' }} />
           我的主页
@@ -56,12 +48,44 @@ const App = () => {
   )
 
   const changePage = (item) => {
+    setOpenKey([item.keyPath[1]])
     navigate(item.key)
   }
 
+  const onOpenChange = (item) => {
+    setOpenKey(item)
+  }
+
   useEffect(() => {
-    navigate('/users')
+    let path = window.location.hash.slice(1)
+    if (['', '/'].includes(path)) path = menuItems?.[0].children?.[0].key
+    setCurrentKey(path)
+    navigate(path)
+    setOpenKey([
+      menuItems?.find((item) => item?.children?.some((itema) => itema?.key === path))?.key,
+    ])
+  }, [window.location.hash, menuItems])
+
+  useEffect(() => {
+    getMenus().then(({ data: res }) => {
+      setMenuItems(
+        res.map((item) => {
+          item.children = item?.children?.map((itemx) => ({
+            ...itemx,
+            icon: <AppstoreFilled />,
+          }))
+          return {
+            ...item,
+            icon: iconMap[item.label],
+          }
+        })
+      )
+      let path = window.location.hash.slice(1)
+      if (['', '/'].includes(path)) path = '/users'
+      setOpenKey([res.find((item) => item?.children?.some((itema) => itema?.key === path))?.key])
+    })
   }, [])
+
   return (
     <Layout>
       <Header
@@ -96,15 +120,16 @@ const App = () => {
           }}>
           <Menu
             mode="inline"
-            defaultSelectedKeys={['/users']}
-            defaultOpenKeys={['1']}
             style={{
               height: '100%',
               borderRight: 0,
             }}
-            items={items}
+            items={menuItems}
             theme="dark"
             onClick={changePage}
+            selectedKeys={currentKey}
+            openKeys={openKey}
+            onOpenChange={onOpenChange}
           />
         </Sider>
         <Layout

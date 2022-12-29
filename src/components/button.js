@@ -1,7 +1,7 @@
 import { Button, Tooltip } from 'antd'
 import { memo } from 'react'
 
-export default memo(({ title, action, icon, danger, other }) => {
+export default memo(({ title, action, icon, danger, other, disabled }) => {
   return (
     <Tooltip placement="top" title={title}>
       <Button
@@ -10,6 +10,7 @@ export default memo(({ title, action, icon, danger, other }) => {
         danger={danger}
         onClick={action}
         icon={icon}
+        disabled={disabled}
       />
     </Tooltip>
   )

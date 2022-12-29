@@ -7,7 +7,7 @@ const instance = axios.create({
 })
 
 instance.interceptors.request.use((config) => {
-  let userInfo = sessionStorage.getItem('bbs-user') || localStorage.getItem('bbs-user')
+  let userInfo = sessionStorage.getItem('user')
   if (userInfo !== null) {
     userInfo = JSON.parse(userInfo)
     if (userInfo !== null) {

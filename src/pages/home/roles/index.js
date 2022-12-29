@@ -10,8 +10,29 @@ import dayjs from 'dayjs'
 import { DeleteFilled, EditFilled, SettingFilled } from '@ant-design/icons'
 import Button from '../../../components/button'
 import { xmMessage } from '../../../utils'
+import { useRights } from '../../../hooks'
+
+const rightsObj = [
+  {
+    label: '添加角色',
+    rights: 16,
+  },
+  {
+    label: '删除角色',
+    rights: 17,
+  },
+  {
+    label: '编辑角色',
+    rights: 19,
+  },
+  {
+    label: '分配权限',
+    rights: 18,
+  },
+]
 
 const Roles = memo(() => {
+  const rightsArr = useRights(rightsObj)
   const [roleList, setRoleList] = useState(null)
   const [searchContent, setSearchContent] = useState('')
   const [currentRole, setcurrentRole] = useState(null)
@@ -44,7 +65,13 @@ const Roles = memo(() => {
 
   const assignSubmit = async (roleId, rightsList) => {
     const result = await assigning(roleId, rightsList)
+    rightsList.sort((a, b) => a - b)
     await reqFn(pagenum, pagesize)
+    let user = JSON.parse(sessionStorage.getItem('user'))
+    if (user.role.id === roleId) {
+      user.rights = result.data
+      sessionStorage.setItem('user', JSON.stringify(user))
+    }
     xmMessage(result.code, result.message)
     setAssigningDialogShow(false)
   }
@@ -66,7 +93,11 @@ const Roles = memo(() => {
           marginRight: '10px',
         }}
       />
-      <AntdBtn type="primary" onClick={() => setAddDialogShow(true)} shape="round">
+      <AntdBtn
+        type="primary"
+        onClick={() => setAddDialogShow(true)}
+        shape="round"
+        disabled={rightsArr[0]}>
         添加角色
       </AntdBtn>
     </div>
@@ -108,6 +139,7 @@ const Roles = memo(() => {
             }}
             icon={<EditFilled />}
             title="编辑角色"
+            disabled={rightsArr[2]}
           />
           <Button
             action={() => {
@@ -117,6 +149,7 @@ const Roles = memo(() => {
             icon={<DeleteFilled />}
             title="删除角色"
             danger
+            disabled={rightsArr[1]}
           />
           <Button
             action={() => {
@@ -127,6 +160,7 @@ const Roles = memo(() => {
             title="分配权限"
             other
             danger
+            disabled={rightsArr[3]}
           />
         </Space>
       ),

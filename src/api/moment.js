@@ -1,8 +1,8 @@
 import request from './'
 
-export const getMoments = (pagenum, pagesize, plateId) => {
+export const getMoments = (pagenum, pagesize, type = 'all') => {
   return request({
-    url: `/moment/plate/${plateId}`,
+    url: `/moment/${type}`,
     params: {
       pagenum,
       pagesize,
@@ -12,63 +12,43 @@ export const getMoments = (pagenum, pagesize, plateId) => {
 
 export const getMoment = (momentId) => {
   return request({
-    url: `/moment/${momentId}`,
+    url: `/moment/${momentId}/detail`,
   })
 }
 
-export const delMoment = (momentId) => {
+export const searchMoment = (content, pagenum, pagesize, type = 'all') => {
   return request({
-    url: `/moment/${momentId}`,
-    method: 'delete',
-  })
-}
-
-export const editMoment = (momentId, { title, content, plateId, visible }) => {
-  return request({
-    url: `/moment/${momentId}`,
-    method: 'patch',
-    data: {
-      title,
-      content,
-      plateId,
-      visible,
-    },
-  })
-}
-
-export const searchMoment = (content, pagenum, pagesize) => {
-  return request({
-    url: '/moment/search',
-    params: {
-      pagenum,
-      pagesize,
-      content,
-    },
-  })
-}
-
-export const uploadPicture = (momentId, data) => {
-  return request({
-    url: `/upload/picture?momentId=${momentId}`,
+    url: `/moment/search/${type}`,
     method: 'post',
-    data,
-  })
-}
-
-export const getMomentByUser = (uid, pagenum, pagesize) => {
-  return request({
-    url: `/users/${uid}/moments`,
     params: {
       pagenum,
       pagesize,
     },
+    data: {
+      content,
+    },
   })
 }
 
-export const delMomentPic = (images, momentId) => {
+export const checkMoment = (momentId, status) => {
   return request({
-    url: `/upload/picture/${momentId}`,
-    method: 'delete',
-    data: images,
+    url: `/moment/${momentId}/check/${status}`,
+    method: 'put',
+  })
+}
+
+export const getCommentsByMomentId = (momentId) => {
+  return request({
+    url: `/comment/${momentId}`,
+  })
+}
+
+export const changeCommentStatus = (id, status) => {
+  return request({
+    url: `/comment/${id}`,
+    method: 'put',
+    data: {
+      status,
+    },
   })
 }

@@ -10,6 +10,12 @@ export const list = (pagenum, pagesize) => {
   })
 }
 
+export const detail = (userId) => {
+  return request({
+    url: `/users/${userId}/detail`,
+  })
+}
+
 export const del = (uid) => {
   return request({
     url: `/users/${uid}`,
@@ -54,11 +60,5 @@ export const edit = (userId, info) => {
     url: `/users/${userId}`,
     method: 'put',
     data: info,
-  })
-}
-
-export const userRole = (uid) => {
-  return request({
-    url: `/users/${uid}/role`,
   })
 }

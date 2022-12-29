@@ -9,10 +9,35 @@ import DelDialog from './dialog/del'
 import dayjs from 'dayjs'
 import { DeleteFilled, EditFilled, SettingFilled } from '@ant-design/icons'
 import Button from '../../../components/button'
-import { xmMessage } from '../../../utils'
+import { xmMessage, verifyRights } from '../../../utils'
+import { useRights } from '../../../hooks'
+
+const rightsObj = [
+  {
+    label: '添加用户',
+    rights: 11,
+  },
+  {
+    label: '删除用户',
+    rights: 12,
+  },
+  {
+    label: '编辑用户',
+    rights: 13,
+  },
+  {
+    label: '分配角色',
+    rights: 14,
+  },
+  {
+    label: '设置管理状态',
+    rights: 15,
+  },
+]
 
 const Users = memo(() => {
   const profile = JSON.parse(sessionStorage.getItem('user'))
+  const rightsArr = useRights(rightsObj)
   const [userList, setUserList] = useState(null)
   const [searchContent, setSearchContent] = useState('')
   const [currentUser, setCurrentUser] = useState(null)
@@ -82,7 +107,11 @@ const Users = memo(() => {
           marginRight: '10px',
         }}
       />
-      <AntdBtn type="primary" onClick={() => setAddDialogShow(true)} shape="round">
+      <AntdBtn
+        disabled={rightsArr[0]}
+        type="primary"
+        onClick={() => setAddDialogShow(true)}
+        shape="round">
         添加用户
       </AntdBtn>
     </div>
@@ -98,6 +127,7 @@ const Users = memo(() => {
       title: '昵称',
       dataIndex: 'name',
       key: 'name',
+      render: (text, record) => <a href={`#/users/${record.id}`}>{text}</a>,
     },
     {
       title: '邮箱',
@@ -115,7 +145,14 @@ const Users = memo(() => {
       key: 'status',
       dataIndex: 'status',
       render: (text, record) => {
-        return <Switch defaultChecked={text === 0} onChange={() => changeStatus(record)} />
+        return (
+          <Switch
+            defaultChecked={text === 0}
+            onChange={() => changeStatus(record)}
+            checked={text === 0}
+            disabled={rightsArr[4]}
+          />
+        )
       },
     },
     {
@@ -136,6 +173,7 @@ const Users = memo(() => {
             }}
             icon={<EditFilled />}
             title="编辑用户"
+            disabled={rightsArr[2]}
           />
           <Button
             action={() => {
@@ -145,12 +183,14 @@ const Users = memo(() => {
             icon={<DeleteFilled />}
             title="删除用户"
             danger
+            disabled={rightsArr[1]}
           />
           <Button
             action={() => {
               setCurrentUser(record)
               setAssigningDialogShow(true)
             }}
+            disabled={rightsArr[3]}
             icon={<SettingFilled />}
             title="分配角色"
             other

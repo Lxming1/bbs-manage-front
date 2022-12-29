@@ -10,3 +10,9 @@ export const login = ({ email, password }) => {
     },
   })
 }
+
+export const getMenus = () => {
+  return request({
+    url: '/menus',
+  })
+}

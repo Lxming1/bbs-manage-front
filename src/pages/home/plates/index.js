@@ -9,8 +9,25 @@ import dayjs from 'dayjs'
 import { DeleteFilled, EditFilled } from '@ant-design/icons'
 import Button from '../../../components/button'
 import { xmMessage } from '../../../utils'
+import { useRights } from '../../../hooks'
+
+const rightsObj = [
+  {
+    label: '添加板块',
+    rights: 22,
+  },
+  {
+    label: '删除板块',
+    rights: 21,
+  },
+  {
+    label: '编辑板块',
+    rights: 23,
+  },
+]
 
 const Roles = memo(() => {
+  const rightsArr = useRights(rightsObj)
   const [roleList, setRoleList] = useState(null)
   const [addDialogShow, setAddDialogShow] = useState(false)
   const [editDialogShow, setEditDialogShow] = useState(false)
@@ -24,7 +41,8 @@ const Roles = memo(() => {
       type="primary"
       onClick={() => setAddDialogShow(true)}
       shape="round"
-      style={{ marginBottom: '10px' }}>
+      style={{ marginBottom: '10px' }}
+      disabled={rightsArr[0]}>
       添加板块
     </AntdBtn>
   )
@@ -83,6 +101,7 @@ const Roles = memo(() => {
             }}
             icon={<EditFilled />}
             title="编辑"
+            disabled={rightsArr[2]}
           />
           <Button
             action={() => {
@@ -92,6 +111,7 @@ const Roles = memo(() => {
             icon={<DeleteFilled />}
             title="删除"
             danger
+            disabled={rightsArr[1]}
           />
         </Space>
       ),

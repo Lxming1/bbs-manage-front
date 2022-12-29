@@ -18,11 +18,11 @@ ul, li, ol{
 
 a{
   text-decoration: none !important;
-  color: #666;
+  color: black;
 }
 
 a:hover{
-  color: #666;
+  color: #056de8;
   text-decoration: underline;
 }
 

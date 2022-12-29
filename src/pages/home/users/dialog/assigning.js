@@ -1,6 +1,7 @@
 import { memo, useEffect, useState } from 'react'
 import { Modal, Form, Input, Select } from 'antd'
 import { list } from '@/api/roles'
+import { xmMessage } from '../../../../utils'
 
 export default memo(({ isLoading, submit, open, hidden, user }) => {
   const [loading, setLoading] = useState(false)
@@ -66,10 +67,12 @@ export default memo(({ isLoading, submit, open, hidden, user }) => {
   }, [user, open])
 
   useEffect(() => {
-    list(1, 999).then(({ data: res }) => {
-      setRoleList(res.roles)
-    })
-  }, [])
+    if (open === true) {
+      list(1, 999).then(({ data: res }) => {
+        setRoleList(res.roles)
+      })
+    }
+  }, [open])
 
   return (
     <Modal

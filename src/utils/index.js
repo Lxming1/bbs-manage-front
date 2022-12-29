@@ -98,3 +98,27 @@ export const verifyLogin = async (isLogin) => {
     resolve()
   })
 }
+
+export const verifyRights = (rightsId) => {
+  const { rights } = JSON.parse(sessionStorage.getItem('user'))
+  return rightsId.map((item) => !rights.includes(item))
+}
+
+export const listTransTree = (result, pidName, idName = 'id') => {
+  const res = []
+  const map = result.reduce((pre, item) => {
+    pre[item[idName]] = item
+    return pre
+  }, {})
+  for (const item of result) {
+    if (item[pidName] === null) {
+      res.push(item)
+    }
+    if (item[pidName] in map) {
+      const parent = map[item[pidName]]
+      parent.children = parent.children || []
+      parent.children.push(item)
+    }
+  }
+  return res
+}
