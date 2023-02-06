@@ -17,7 +17,7 @@ export default memo(({ submit, open, hidden }) => {
 
   const submitAdd = async () => {
     const [name, desc] = fields.map((item) => item.value)
-    if (name.trim() !== '' && desc.trim() !== '') {
+    if (name.trim() !== '') {
       setLoading(true)
       await submit(name, desc)
       setLoading(false)
