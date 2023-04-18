@@ -6,6 +6,7 @@ export default memo(({ open, hidden, role, submit }) => {
   const [loading, setLoading] = useState(false)
   const [rightsList, setRightsList] = useState(null)
   const [currentRights, setCurrentRights] = useState(null)
+  const { rights } = JSON.parse(sessionStorage.getItem('user'))
 
   const submitAssigning = async () => {
     setLoading(true)
@@ -19,7 +20,6 @@ export default memo(({ open, hidden, role, submit }) => {
   }
 
   const onCheck = (keys, e) => {
-    console.log(keys)
     setCurrentRights(keys)
   }
 
@@ -47,7 +47,7 @@ export default memo(({ open, hidden, role, submit }) => {
   }
 
   useEffect(() => {
-    getRightOptions()
+    rights.includes(18) && getRightOptions()
   }, [])
 
   useEffect(() => {

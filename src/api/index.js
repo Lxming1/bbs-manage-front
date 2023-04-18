@@ -2,7 +2,8 @@ import axios from 'axios'
 import { xmMessage } from '../utils'
 
 const instance = axios.create({
-  baseURL: '/api',
+  // baseURL: '/api',
+  baseURL: 'http://1.12.47.237:8005/api',
   timeout: 20000,
 })
 
